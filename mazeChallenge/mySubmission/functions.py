@@ -5,6 +5,15 @@ Author: prushh
 """
 import json
 
+from mazeClient import send_command
+
+
+def get_response(action: str) -> bytes:
+    '''
+    Returns the engine response.
+    '''
+    return send_command(action)
+
 
 def to_dict(data: bytes) -> dict:
     '''

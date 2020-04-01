@@ -7,6 +7,7 @@ import psutil
 import subprocess
 from os import path
 
+
 def _get_process_id(p_name: str) -> int:
     '''
     Check if a process with the same name 'p_name'
@@ -28,7 +29,7 @@ def _get_process_id(p_name: str) -> int:
 def execute(file_path: str) -> int:
     '''
     Check if 'file_path' exists and it is an executable,
-    if it is not running it is started. Return the process id.
+    if it is not running it is started. Returns the process id.
     '''
     if path.exists(file_path):
         p_name, ext = path.splitext(path.basename(file_path))

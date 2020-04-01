@@ -3,90 +3,69 @@
 The Maze Challenge - Controller for interact with MazeEngine
 Author: prushh
 """
-import argparse
+from pynput.keyboard import Listener
 
-from pynput.keyboard import Key, Listener
-
-from mazeClient import send_command
 from mazeClient import Commands as command
 
-from engine import execute, kill
-from functions import to_dict, pprint
+from functions import to_dict, pprint, get_response
 
-def flush_input():
+
+class Controller:
     '''
-    Flush the keyboard input buffer.
+    Class that contains methods to use client controller.
     '''
-    try:
-        # Windows
-        import msvcrt
-        while msvcrt.kbhit():
-            msvcrt.getch()
-    except ImportError:
-        # Linux, MacOS
-        import sys, termios
-        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
+    def __init__(self, debug):
+        '''
+        Initialize flag for prints debug information,
+        creates act_map for key-action association.
+        '''
+        self.debug = debug
+        self.act_map = {
+            'w': command.MOVE_UP,
+            'a': command.MOVE_LEFT,
+            's': command.MOVE_DOWN,
+            'd': command.MOVE_RIGHT,
+            'f': command.GET_STATE,
+            'e': command.EXIT
+        }
 
+    def explore_maze(self):
+        '''
+        Listen for keys pressed.
+        '''
+        with Listener(on_press=self._on_press) as listener:
+            listener.join()
 
-def do_action(key):
-    '''
-    Returns the action to do base on key pressed.
-    '''
-    act_map = {
-        'w': command.MOVE_UP,
-        'a': command.MOVE_LEFT,
-        's': command.MOVE_DOWN,
-        'd': command.MOVE_RIGHT,
-        'f': command.GET_STATE,
-        'e': command.EXIT
-    }
+    def _on_press(self, key):
+        '''
+        Sends the action to do based on key pressed.
+        '''
+        try:
+            # Check if key correspond to an action
+            if key.char in self.act_map.keys():
+                action = self.act_map[key.char]
+                if self.debug:
+                    print(action)
+                if key.char == 'e':
+                    return False
+                tmp = get_response(action)
+                if key.char == 'f':
+                    pprint(to_dict(tmp))
+        except AttributeError:
+            # Cleans terminal after an illegal key
+            self._flush_input()
 
-    try:
-        # Check if key correspond to an action
-        if key.char in act_map.keys():
-            action = act_map[key.char]
-            if args.debug:
-                print(action)
-            if key.char == 'e':
-                return False
-            tmp = send_command(action)
-            if key.char == 'f':
-                pprint(to_dict(tmp))
-    except AttributeError:
-        flush_input()
-
-
-def main():
-    pid = execute(args.file_path)
-    if pid == -1:
-        return 1
-
-    print(
-        " - Use WASD keys to move around the maze\n"
-        " - Press F for inspect\n"
-        " - Press E to exit\n"
-    )
-    with Listener(on_press=do_action) as listener:
-        listener.join()
-
-    kill(pid)
-    return 0
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Allows the use of WASD keys to move around the maze,"
-                    " specify mazeEngine.ext path for parallel execution."
-    )
-    parser.add_argument(
-        'file_path', type=str,
-        help='executable file for launch the engine'
-    )
-    parser.add_argument(
-        '-d', '--debug',
-        action='store_true',
-        help='print commands sent'
-    )
-
-    args = parser.parse_args()
-    exit(main())
+    def _flush_input(self):
+        '''
+        Flush the keyboard input buffer.
+        '''
+        try:
+            # Windows
+            import msvcrt
+            while msvcrt.kbhit():
+                msvcrt.getch()
+        except ImportError:
+            # Linux, MacOS
+            import sys
+            import termios
+            termios.tcflush(sys.stdin, termios.TCIOFLUSH)
