@@ -1,4 +1,3 @@
-# if you use the default maze client
 import telegram
 
 
