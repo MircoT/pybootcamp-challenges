@@ -10,8 +10,8 @@ from mazeClient import Commands as command
 
 from engine import execute, kill
 from controller import Controller
-from functions import to_dict, get_response
-from statistics import plt_colors_dist, plt_xy_dist
+from functions import to_dict, get_response, get_pickle_obj
+from statistics import plt_colors_dist, plt_xy_dist, plt_map
 
 class Maze():
     '''
@@ -21,26 +21,31 @@ class Maze():
         '''
         Initialize structures to store data.
         '''
+        self.known = []
         self.visited = []
-        self.colors_x = {}
-        self.colors_y = {}
+        self.colors_xy = {'x': {}, 'y': {}}
         self.colors_count = {
             'white': 0,
             'blue': 0,
-            'green': 0,
+            '#00ff00': 0,
             'red': 0
         }
 
         # Get start node information
         cur_node = to_dict(get_response(command.GET_STATE))
-        self.visited.append({
+        tmp = {
             'x': cur_node['userX'],
             'y': cur_node['userY'],
             'val': cur_node['userVal']
-        })
+        }
+        # Align situation
+        self.visited.append(tmp)
+        self.__increment_coord_color(tmp)
+        self.__increment_color(tmp['val'])
 
         # Start maze exploration
         self.explore(cur_node, command.GET_STATE)
+        self._fix_known()
 
     def __reverse_action(self, action: str) -> str:
         '''
@@ -64,7 +69,7 @@ class Maze():
         colors_code = {
             32: 'white',
             66: 'blue',
-            71: 'green',
+            71: '#00ff00',
             82: 'red'
         }
         return colors_code[color]
@@ -80,16 +85,16 @@ class Maze():
         dict_ = {
             'white': 0,
             'blue': 0,
-            'green': 0,
+            '#00ff00': 0,
             'red': 0
         }
 
         # If key does not exists create
         # and fill it with default value
-        self.colors_x.setdefault(x, dict_)
-        self.colors_y.setdefault(y, dict_)
-        self.colors_x[x][self.__get_color_name(c_code)] += 1
-        self.colors_y[y][self.__get_color_name(c_code)] += 1
+        self.colors_xy['x'].setdefault(x, dict_)
+        self.colors_xy['y'].setdefault(y, dict_)
+        self.colors_xy['x'][x][self.__get_color_name(c_code)] += 1
+        self.colors_xy['y'][y][self.__get_color_name(c_code)] += 1
 
     def __increment_color(self, color: int):
         '''
@@ -130,32 +135,45 @@ class Maze():
                 valid.append(neighbor)
         return valid
 
-    def explore(self, cur_node: dict, last_act: str):
+    def _fix_known(self):
         '''
-        Core for maze solver. It is a recursive function
-        inspired to Depth-First-Search logic.
+        Add the known neighbors to the visited ones.
         '''
-        neighbors = self.__get_valid_neighbors(cur_node)
-        for neighbor in neighbors:
+        for neighbor in self.known:
             if neighbor not in self.visited:
                 self.visited.append(neighbor)
                 self.__increment_coord_color(neighbor)
                 self.__increment_color(neighbor['val'])
 
-                action = self.__get_action(cur_node, neighbor)
-                new_node = to_dict(get_response(action))
-                if args.debug:
-                    print(action)
-                    sleep(0.5)
+    def explore(self, cur_node: dict, last_act: str):
+        '''
+        Core for maze solver. It is a recursive function
+        inspired to Depth-First-Search logic.
+        '''
+        neighbors = cur_node['Neighbors']
+        for neighbor in neighbors:
+            if neighbor in self.__get_valid_neighbors(cur_node):
+                if neighbor not in self.visited:
+                    self.visited.append(neighbor)
+                    self.__increment_coord_color(neighbor)
+                    self.__increment_color(neighbor['val'])
 
-                self.explore(new_node, action)
+                    action = self.__get_action(cur_node, neighbor)
+                    new_node = to_dict(get_response(action))
+                    if args.debug:
+                        print(action)
+                        sleep(0.5)
+
+                    self.explore(new_node, action)
+            elif neighbor not in self.visited:
+                self.known.append(neighbor)
         # There are not other valid near node,
         # reverse last action and go back
         reverse_act = self.__reverse_action(last_act)
         get_response(reverse_act)
         if args.debug:
             print(reverse_act)
-            sleep(0.5)
+            sleep(0.5)                
 
 
 def main():
@@ -188,9 +206,11 @@ def main():
         if args.no_stats:
             print(f"Total cells visited: {len(maze.visited)}")
         else:
+            old_data = get_pickle_obj(maze.colors_xy)
             print("Show statistics!")
             plt_colors_dist(maze.colors_count)
-            plt_xy_dist(maze.colors_x, maze.colors_y)
+            plt_xy_dist(maze.colors_xy, old_data)
+            plt_map(maze.visited)
 
     kill(pid)
     return 0

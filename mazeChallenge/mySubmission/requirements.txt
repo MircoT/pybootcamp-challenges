@@ -1,3 +1,5 @@
 pynput
 psutil
 matplotlib
+pandas
+numpy
