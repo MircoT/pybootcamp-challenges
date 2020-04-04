@@ -45,7 +45,7 @@ class Maze():
 
         # Start maze exploration
         self.explore(cur_node, command.GET_STATE)
-        self._fix_known()
+        self.__fix_known()
 
     def __reverse_action(self, action: str) -> str:
         '''
@@ -135,7 +135,7 @@ class Maze():
                 valid.append(neighbor)
         return valid
 
-    def _fix_known(self):
+    def __fix_known(self):
         '''
         Add the known neighbors to the visited ones.
         '''

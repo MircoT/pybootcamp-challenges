@@ -25,9 +25,9 @@ def get_pickle_obj(colors_xy: dict) -> dict:
         pass
     if old_data == colors_xy:
         old_data = {}
-        print("Maze not saved, same as the previous one...")
+        print("Color frequency distribution not saved, same as the previous one...")
     else:
-        print("Save maze to pickle file...")
+        print("Save XY color frequency distribution to pickle file...")
         with gzip.open(name_file, 'wb') as handle:
             pickle.dump(colors_xy, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
