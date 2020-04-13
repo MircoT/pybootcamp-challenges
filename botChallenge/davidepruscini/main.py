@@ -4,14 +4,14 @@ Bot Challenge - Mime of Engine
 Author: prushh
 """
 import logging
-from datetime import datetime
 
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
 from settings import TOKEN, passphrase, endphrase
-from quests import create_qts, check_choice, check_qts, get_solved, NUM_QTS
+from quests import (get_now, create_qts, check_choice,
+                    check_qts, get_solved, NUM_QTS)
 
 # Enable logging
 logging.basicConfig(
@@ -38,6 +38,24 @@ def quest2(update, context):
     update.message.reply_text(reply)
 
 
+def quest3(update, context):
+    '''Command for quest3.'''
+    reply = check_qts(context, 3)
+    update.message.reply_text(reply)
+
+
+def quest4(update, context):
+    '''Command for quest4.'''
+    reply = check_qts(context, 4)
+    update.message.reply_text(reply)
+
+
+def quest5(update, context):
+    '''Command for quest5.'''
+    reply = check_qts(context, 5)
+    update.message.reply_text(reply)
+
+
 def status(update, context):
     '''Show number of completed quests.'''
     if 'quests' in context.user_data.keys():
@@ -55,7 +73,7 @@ def unknown(update, context):
 
 
 def cancel(update, context):
-    print("Cancel command")
+    '''Necessary for fallbacks, unused.'''
     return ConversationHandler.END
 
 
@@ -84,6 +102,12 @@ def quest_choice(update, context):
         reply = check_choice(quests, 1)
     elif msg == 'quest 2':
         reply = check_choice(quests, 2)
+    elif msg == 'quest 3':
+        reply = check_choice(quests, 3)
+    elif msg == 'quest 4':
+        reply = check_choice(quests, 4)
+    elif msg == 'quest 5':
+        reply = check_choice(quests, 5)
     else:
         reply = "Non ho niente da dire..."
 
@@ -99,9 +123,10 @@ def unlocks(update, context):
 
     if msg == passphrase:
         if 'quests' not in context.user_data.keys():
-            # Differenza: lui crea quests al primo msg senza passphrase
             context.user_data['quests'] = create_qts()
-        reply_keyboard = [['Quest 0', 'Quest 1', 'Quest 2']]
+        reply_keyboard = [
+            ['Quest 0', 'Quest 1', 'Quest 2'],
+            ['Quest 3', 'Quest 4', 'Quest 5']]
         markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True)
         update.message.reply_text(reply, reply_markup=markup)
         return 1
@@ -114,7 +139,6 @@ def unlocks(update, context):
             reply = "Non hai completato tutte le missioni. Che peccato..."
 
     update.message.reply_text(reply)
-    return ConversationHandler.END
 
 
 def main():
@@ -123,15 +147,17 @@ def main():
     dp = updater.dispatcher
 
     # Display authorization message
-    now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
     bot_username = updater.bot.get_me()['username']
-    print(f"{now} Authorized on account {bot_username}")
+    print(f"{get_now()} Authorized on account {bot_username}")
 
     # Adding all the handler for the commands
     dp.add_handler(CommandHandler('status', status))
     dp.add_handler(CommandHandler('quest0', quest0))
     dp.add_handler(CommandHandler('quest1', quest1))
     dp.add_handler(CommandHandler('quest2', quest2))
+    dp.add_handler(CommandHandler('quest3', quest3))
+    dp.add_handler(CommandHandler('quest4', quest4))
+    dp.add_handler(CommandHandler('quest5', quest5))
     dp.add_handler(MessageHandler(Filters.command, unknown))
 
     cmd_unlocks = ConversationHandler(
@@ -139,7 +165,7 @@ def main():
 
         states={
             1: [MessageHandler(
-                    Filters.regex('^(Quest 0|Quest 1|Quest 2)$'),
+                    Filters.regex('^(Quest 0|Quest 1|Quest 2|Quest 3|Quest 4|Quest 5)$'),
                     quest_choice),
                 MessageHandler(Filters.text, quest_choice)],
         },
