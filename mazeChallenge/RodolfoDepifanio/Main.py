@@ -1,9 +1,11 @@
-import mazeClient
 import json
-from time import sleep
-import matplotlib.pyplot as plt
 import random
+from time import sleep
+
+import matplotlib.pyplot as plt
 import pandas as pd
+
+import mazeClient
 
 
 def Assegnatrice_Comando(x0, y0, x1, y1, command):

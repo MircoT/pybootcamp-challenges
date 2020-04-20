@@ -1,6 +1,7 @@
-import tkinter as tk
-import mazeClient
 import json
+import tkinter as tk
+
+import mazeClient
 
 
 def Navigatore(event):
