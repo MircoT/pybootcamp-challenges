@@ -1,10 +1,12 @@
-import mazeClient
 import getch
 
-command = mazeClient.Commands
+from .mazeClient import send_command
+from .mazeClient import Commands as command
 
-# Capice quale comando mandare al server usando freccie direzionali come input
+
 def move(input: str) -> str:
+    """Capice quale comando mandare al server usando freccie direzionali
+    come input"""
     option = {
         "H": command.MOVE_UP,
         "P": command.MOVE_DOWN,
@@ -12,11 +14,11 @@ def move(input: str) -> str:
         "K": command.MOVE_LEFT
     }
 
-    return mazeClient.send_command(option[input])
+    return send_command(option[input])
 
 
-# Permette di muoversi liberamente nel labirinto
 def free_move():
+    """Permette di muoversi liberamente nel labirinto"""
     fine = False
     print("Per muoversi usare le freccie direzionali.\nPer uscire digitare q.")
     while not fine:
@@ -30,6 +32,6 @@ def free_move():
             print("Carattere invalido !")
             continue
 
-        char_ = getch.getch()   # Prende il secondo carattere delle freccie direzionali 
+        char_ = getch.getch()   # Prende il secondo carattere delle freccie direzionali
 
         move(char_.decode("ascii"))

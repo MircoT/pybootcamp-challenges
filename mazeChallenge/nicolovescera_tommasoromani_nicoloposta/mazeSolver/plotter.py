@@ -2,19 +2,19 @@ import numpy as np
 import pandas as pd
 from colorama import Back, init
 
-
 # Dizionario per stampa di colori a video
-dict_colori2 = {'white': 1, 'red': 2, 'blue': 3, 'green': 4}
+_DICT_COLORI2 = {'white': 1, 'red': 2, 'blue': 3, 'green': 4}
 
 
-# Carica i dati del file passato in un DataFrame
 def load_data(fname: str) -> pd.DataFrame:
+    """Carica i dati del file passato in un DataFrame"""
     data = pd.read_csv(fname)
 
     return data
 
-# Stampa a video della Mappa
+
 def print_matrix(matrice: np.ndarray):
+    """Stampa a video della Mappa"""
     str_ = ""
     for i in range(len(matrice)):
         for j in range(len(matrice)):
@@ -33,8 +33,8 @@ def print_matrix(matrice: np.ndarray):
     print(str_)
 
 
-# Creazione e modifica della matrice prima della stampa a video
 def plot_maze():
+    """Creazione e modifica della matrice prima della stampa a video"""
     init(autoreset=True)    # Server per l'output colorato
 
     data = load_data('data.csv')
@@ -48,7 +48,11 @@ def plot_maze():
 
     # Sistema le coordinate nella matrice
     for _, row in data.iterrows():
-        matrice[- int(row['x']) % massimo][- int(row['y']) % massimo] = dict_colori2[row['color']]
+        matrice[
+            - int(row['x']) % massimo
+        ][
+            - int(row['y']) % massimo
+        ] = _DICT_COLORI2[row['color']]
 
     print_matrix(matrice)
-    print("\nLa mappa è orientata come nel MazeEngine.\nLa riga delle X inizia dal basso verso l'alto.\nLa riga delle Y parte da destra a sinitra nelle verticali.\n")    
+    print("\nLa mappa è orientata come nel MazeEngine.\nLa riga delle X inizia dal basso verso l'alto.\nLa riga delle Y parte da destra a sinitra nelle verticali.\n")
