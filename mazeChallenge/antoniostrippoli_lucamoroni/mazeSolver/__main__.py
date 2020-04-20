@@ -3,18 +3,20 @@
 MazeChallenge - by MircoT
 Solvers: Antonio Strippoli, Luca Moroni
 """
-from mazeClient import send_command
-from mazeClient import Commands as command
 import json
 import pickle
 from time import sleep
-from stats import plot_map, plot_colors_dist, plot_colors_xy_dist
+
+from .mazeClient import Commands as command
+from .mazeClient import send_command
+from .stats import plot_colors_dist, plot_colors_xy_dist, plot_map
 
 
 class Maze():
     """
     Class that contains methods to solve the maze
     """
+
     def __init__(self):
         # Initialize variables used to collect data from maze
         # visited = map representation
@@ -49,13 +51,11 @@ class Maze():
         # Explore the maze
         self.dfs_visit(curr_node, command.GET_STATE)
 
-
     def get_dict(self, data: bytes):
         """
         Parse data and returns a dictionary (more usable)
         """
         return json.loads(data.decode('ascii'))
-
 
     def get_inverse_command(self, cmd: "mazeClient.Commands"):
         """
@@ -69,7 +69,6 @@ class Maze():
             command.GET_STATE:  command.GET_STATE
         }
         return cmd_map[cmd]
-
 
     def get_command_from_pos(self, org: dict, dst: dict) -> "mazeClient.Commands":
         """
@@ -88,7 +87,6 @@ class Maze():
             return command.MOVE_LEFT
         return command.GET_STATE  # Bad usage
 
-
     def get_reachable_neighbors(self, v: dict):
         """
         Returns valid neighbors (excludes the diagonal ones)
@@ -98,7 +96,6 @@ class Maze():
             if (el["x"] - v["userX"] == 0) or (el["y"] - v["userY"] == 0):
                 tmp.append(el)
         return tmp
-
 
     def visit_node(self, node: dict):
         """
@@ -125,7 +122,6 @@ class Maze():
             'white': 0
         })[node_color] += 1
 
-
     def dfs_visit(self, v: dict, last_cmd: str):
         """
         DFS Algorithm to explore the maze
@@ -138,14 +134,14 @@ class Maze():
                 # Move to neighbor
                 cmd = self.get_command_from_pos(v, u)
                 u = self.get_dict(send_command(cmd))
-                #sleep(0.5)
+                # sleep(0.5)
 
                 # Visit from that neighbor
                 self.dfs_visit(u, cmd)
 
         # Move back, no more valid neighbors
         send_command(self.get_inverse_command(last_cmd))
-        #sleep(0.5)
+        # sleep(0.5)
 
 
 if __name__ == '__main__':

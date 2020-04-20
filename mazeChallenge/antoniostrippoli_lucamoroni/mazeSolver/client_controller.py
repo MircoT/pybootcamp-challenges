@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from pynput import keyboard
+
 from mazeClient import Commands as command
 from mazeClient import send_command
-from pynput import keyboard
 
 
 def on_press(key):
@@ -12,9 +13,9 @@ def on_press(key):
     # Not a valid key pressed?
     if not hasattr(key, 'char'):
         return False
-    if not key.char in keycode_map:
+    if key.char not in keycode_map:
         return False
-    
+
     # Map keycode to action and execute action
     action = keycode_map[key.char]
     res = send_command(action)
@@ -35,7 +36,7 @@ if __name__ == "__main__":
         'd': command.MOVE_RIGHT,
         'e': command.GET_STATE
     }
-    
+
     print("INSTRUCTIONS:\n\tWASD -> Move around the maze;\n\tE -> GET STATE;\n\tAny other Key: QUIT")
     # Collect events until released
     with keyboard.Listener(on_press=on_press) as listener:
