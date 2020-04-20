@@ -3,13 +3,12 @@
 Bot Challenge - Quests framework and useful functions
 Author: prushh
 """
-from math import pi
-from random import randint
 from base64 import b64decode
 from datetime import datetime
+from math import pi
+from random import randint
 
 from natural.text import nato
-
 
 # Number of quests
 NUM_QTS = 6

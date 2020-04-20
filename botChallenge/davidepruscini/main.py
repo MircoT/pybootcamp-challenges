@@ -58,7 +58,7 @@ def quest5(update, context):
 
 def status(update, context):
     '''Show number of completed quests.'''
-    if 'quests' in context.user_data.keys():
+    if 'quests' in context.user_data:
         quests = context.user_data['quests']
         solved_qts = get_solved(quests)
         reply = f"Hai completato {solved_qts} quest su {NUM_QTS}"
@@ -122,7 +122,7 @@ def unlocks(update, context):
     reply = "Non ho niente da dire..."
 
     if msg == passphrase:
-        if 'quests' not in context.user_data.keys():
+        if 'quests' not in context.user_data:
             context.user_data['quests'] = create_qts()
         reply_keyboard = [
             ['Quest 0', 'Quest 1', 'Quest 2'],
@@ -131,7 +131,7 @@ def unlocks(update, context):
         update.message.reply_text(reply, reply_markup=markup)
         return 1
     elif msg == endphrase:
-        if 'quests' in context.user_data.keys():
+        if 'quests' in context.user_data:
             quests = context.user_data['quests']
             if get_solved(quests) == NUM_QTS:
                 reply = "Congratulazioni! Hai finito tutte le missioni..."
