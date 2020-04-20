@@ -3,9 +3,10 @@
 The Maze Challenge - Utilities for execute or kill MazeEngine process
 Author: prushh
 """
-import psutil
 import subprocess
 from os import path
+
+import psutil
 
 
 def _get_process_id(p_name: str) -> int:

@@ -6,17 +6,18 @@ Author: prushh
 import argparse
 from time import sleep
 
-from mazeClient import Commands as command
+from .controller import Controller
+from .engine import execute, kill
+from .functions import get_pickle_obj, get_response, to_dict
+from .mazeClient import Commands as command
+from .statistics import plt_colors_dist, plt_map, plt_xy_dist
 
-from engine import execute, kill
-from controller import Controller
-from functions import to_dict, get_response, get_pickle_obj
-from statistics import plt_colors_dist, plt_xy_dist, plt_map
 
 class Maze():
     '''
     Class for move inside maze and collect statistics.
     '''
+
     def __init__(self):
         '''
         Initialize structures to store data.
@@ -173,7 +174,7 @@ class Maze():
         get_response(reverse_act)
         if args.debug:
             print(reverse_act)
-            sleep(0.5)                
+            sleep(0.5)
 
 
 def main():

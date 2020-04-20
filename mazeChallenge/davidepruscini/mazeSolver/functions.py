@@ -3,11 +3,11 @@
 The Maze Challenge - Useful functions
 Author: prushh
 """
-import json
 import gzip
+import json
 import pickle
 
-from mazeClient import send_command
+from .mazeClient import send_command
 
 
 def get_pickle_obj(colors_xy: dict) -> dict:

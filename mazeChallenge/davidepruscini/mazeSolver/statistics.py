@@ -3,9 +3,9 @@
 The Maze Challenge - Functions to display plot and stats
 Author: prushh
 """
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 
 
@@ -36,7 +36,8 @@ def plt_colors_dist(dict_: dict):
     '''
     # Prepares colors list and labels
     colors = dict_.keys()
-    cap_colors = ['Green' if x=='#00ff00' else x.capitalize() for x in colors]
+    cap_colors = ['Green' if x == '#00ff00' else x.capitalize()
+                  for x in colors]
     values = dict_.values()
 
     title = f'Colors distribution for {sum(values)} cells'
@@ -81,23 +82,29 @@ def plt_xy_dist(xy_freq: dict, old_xy_freq: dict):
     # Current maze information
     df_x = pd.DataFrame.from_dict(xy_freq['x'], orient='index').sort_index()
     df_y = pd.DataFrame.from_dict(xy_freq['y'], orient='index').sort_index()
-    
+
     # Create subplot ad customize it
     fig, axes = _dark_subplots(nrows=2, ncols=2)
     fig.suptitle(title, fontsize=15)
-    df_x.plot.bar(figsize=(12, 8), ax=axes[0][0], yticks=_get_max_tick(df_x), color=colors, legend=False)
-    df_y.plot.bar(ax=axes[0][1], yticks=_get_max_tick(df_y), color=colors, legend=False)
+    df_x.plot.bar(figsize=(12, 8), ax=axes[0][0], yticks=_get_max_tick(
+        df_x), color=colors, legend=False)
+    df_y.plot.bar(ax=axes[0][1], yticks=_get_max_tick(
+        df_y), color=colors, legend=False)
     axes[0][0].set(title=title_x, ylabel=ylabel)
     axes[0][1].set(title=title_y)
 
     if len(old_xy_freq):
         # Old maze information
-        old_df_x = pd.DataFrame.from_dict(old_xy_freq['x'], orient='index').sort_index()
-        old_df_y = pd.DataFrame.from_dict(old_xy_freq['y'], orient='index').sort_index()
+        old_df_x = pd.DataFrame.from_dict(
+            old_xy_freq['x'], orient='index').sort_index()
+        old_df_y = pd.DataFrame.from_dict(
+            old_xy_freq['y'], orient='index').sort_index()
 
         # Create subplot ad customize it
-        old_df_x.plot.bar(ax=axes[1][0], yticks=_get_max_tick(old_df_x), color=colors, legend=False)
-        old_df_y.plot.bar(ax=axes[1][1], yticks=_get_max_tick(old_df_y), color=colors, legend=False)
+        old_df_x.plot.bar(ax=axes[1][0], yticks=_get_max_tick(
+            old_df_x), color=colors, legend=False)
+        old_df_y.plot.bar(ax=axes[1][1], yticks=_get_max_tick(
+            old_df_y), color=colors, legend=False)
 
         axes[1][0].set(title=old_title_x, ylabel=ylabel)
         axes[1][1].set(title=old_title_y)

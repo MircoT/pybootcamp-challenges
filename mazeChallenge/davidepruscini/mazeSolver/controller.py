@@ -5,15 +5,15 @@ Author: prushh
 """
 from pynput.keyboard import Listener
 
-from mazeClient import Commands as command
-
-from functions import to_dict, pprint, get_response
+from .functions import get_response, pprint, to_dict
+from .mazeClient import Commands as command
 
 
 class Controller:
     '''
     Class that contains methods to use client controller.
     '''
+
     def __init__(self, debug):
         '''
         Initialize flag for prints debug information,
